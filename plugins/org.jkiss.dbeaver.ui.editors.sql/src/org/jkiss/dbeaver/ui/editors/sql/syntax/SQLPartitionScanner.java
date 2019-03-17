@@ -121,6 +121,8 @@ public class SQLPartitionScanner extends RuleBasedPartitionScanner {
         if (!hasDoubleQuoteRule) {
             rules.add(new MultiLineRule(SQLConstants.STR_QUOTE_DOUBLE, SQLConstants.STR_QUOTE_DOUBLE, sqlQuotedToken, dialect.getStringEscapeCharacter()));
         }
+        if (dialect.getDialectName().equals("PostgreSQL"))
+        	rules.add(new DollarQuoteRule(sqlStringToken));
 
         // Add special case word rule.
         EmptyCommentRule wordRule = new EmptyCommentRule(multilineCommentToken);
