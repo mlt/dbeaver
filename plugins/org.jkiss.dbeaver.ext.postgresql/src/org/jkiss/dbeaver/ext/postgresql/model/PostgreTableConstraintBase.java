@@ -144,7 +144,7 @@ public abstract class PostgreTableConstraintBase extends JDBCTableConstraint<Pos
             try (JDBCSession session = DBUtils.openMetaSession(monitor, this, "Read constraint definition")) {
                 constrDDL =
                     "CONSTRAINT " + DBUtils.getQuotedIdentifier(this) + " " +
-                    JDBCUtils.queryString(session, "SELECT pg_catalog.pg_get_constraintdef(?)", getObjectId());
+                    JDBCUtils.queryString(session, "SELECT pg_catalog.pg_get_constraintdef(?, true)", getObjectId());
             } catch (SQLException e) {
                 throw new DBException(e, getDataSource());
             }
