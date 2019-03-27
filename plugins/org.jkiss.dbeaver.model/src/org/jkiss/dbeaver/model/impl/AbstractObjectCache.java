@@ -90,7 +90,17 @@ public abstract class AbstractObjectCache<OWNER extends DBSObject, OBJECT extend
     public OBJECT getCachedObject(@NotNull String name)
     {
         synchronized (this) {
-            return objectList == null || name == null ? null : getObjectMap().get(caseSensitive ? name : name.toUpperCase());
+        	OBJECT o = objectList == null || name == null ? null : getObjectMap().get(caseSensitive ? name : name.toUpperCase());
+        	if (null == o) {
+        		// give another chance
+        		// TODO: Use MultiValueMap? There might be multiple procedures returning table with same name
+        		// It is hard to consider actual parameters while performing completion.
+        		// Perhaps we could list all table parameters for all possible procedures?
+        		Optional<String> key = getObjectMap().keySet().stream().filter(p -> p.startsWith(name+'(')).findAny();
+        		if (key.isPresent())
+        			o = getObjectMap().get(key.get());
+        	}
+        	return o;
         }
     }
 

@@ -23,6 +23,7 @@ import org.jkiss.dbeaver.model.DBUtils;
 import org.jkiss.dbeaver.model.impl.jdbc.struct.JDBCTable;
 import org.jkiss.dbeaver.model.meta.Property;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
+import org.jkiss.dbeaver.model.struct.DBSObject;
 
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class PostgreRolePrivilege extends PostgrePrivilege {
     {
         final PostgreSchema schema = owner.getDatabase().getSchema(monitor, schemaName);
         if (schema != null) {
-            JDBCTable childTable = schema.getChild(monitor, objectName);
+            DBSObject childTable = schema.getChild(monitor, objectName);
             return childTable instanceof PostgreObject ? (PostgreObject) childTable : null;
         }
         return null;

@@ -50,6 +50,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * PostgreSchema
@@ -266,15 +267,20 @@ public class PostgreSchema implements DBSSchema, DBPNamedObject2, DBPSaveableObj
     }
 
     @Override
-    public Collection<? extends JDBCTable> getChildren(@NotNull DBRProgressMonitor monitor)
+    public Collection<? extends DBSObject> getChildren(@NotNull DBRProgressMonitor monitor)
         throws DBException {
-        return getTableCache().getTypedObjects(monitor, this, PostgreTableReal.class);
+    	Collection<? extends DBSObject> o = tableCache.getAllObjects(monitor, this);
+    	Collection<? extends DBSObject> o2 = proceduresCache.getTypedObjects(monitor, this, PostgreProcedure.class);
+    	return Stream.concat(o.stream(), o2.stream().filter(p -> ((PostgreProcedure)p).isReturnsSet())).collect(Collectors.toList());
     }
 
     @Override
-    public JDBCTable getChild(@NotNull DBRProgressMonitor monitor, @NotNull String childName)
+    public DBSObject getChild(@NotNull DBRProgressMonitor monitor, @NotNull String childName)
         throws DBException {
-        return getTableCache().getObject(monitor, this, childName);
+    	DBSObject o = tableCache.getObject(monitor, this, childName);
+    	if (null == o)
+    		o = proceduresCache.getObject(monitor, this, childName);
+        return o;
     }
 
     @Override

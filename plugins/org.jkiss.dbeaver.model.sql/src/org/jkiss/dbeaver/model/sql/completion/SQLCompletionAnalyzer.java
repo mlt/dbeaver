@@ -29,6 +29,9 @@ import org.jkiss.dbeaver.model.runtime.DBRRunnableParametrized;
 import org.jkiss.dbeaver.model.sql.*;
 import org.jkiss.dbeaver.model.sql.parser.SQLWordPartDetector;
 import org.jkiss.dbeaver.model.struct.*;
+import org.jkiss.dbeaver.model.struct.rdb.DBSProcedure;
+import org.jkiss.dbeaver.model.struct.rdb.DBSProcedureParameter;
+import org.jkiss.dbeaver.model.struct.rdb.DBSProcedureParameterKind;
 import org.jkiss.dbeaver.model.text.TextUtils;
 import org.jkiss.utils.CommonUtils;
 
@@ -37,6 +40,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 /**
  * Completion analyzer
@@ -664,6 +668,9 @@ public class SQLCompletionAnalyzer implements DBRRunnableParametrized<DBRProgres
             children = ((DBSObjectContainer)parent).getChildren(monitor);
         } else if (parent instanceof DBSEntity) {
             children = ((DBSEntity)parent).getAttributes(monitor);
+        } else if (parent instanceof DBSProcedure) {
+        	children = ((DBSProcedure)parent).getParameters(monitor).stream().
+        			filter(p -> ((DBSProcedureParameter)p).getParameterKind()==DBSProcedureParameterKind.TABLE).collect(Collectors.toList());
         }
         if (children != null && !children.isEmpty()) {
             //boolean isJoin = SQLConstants.KEYWORD_JOIN.equals(request.wordDetector.getPrevKeyWord());
